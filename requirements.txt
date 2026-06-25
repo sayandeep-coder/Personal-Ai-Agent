@@ -24,6 +24,7 @@ typer
 rich
 loguru
 tenacity
+psutil
 pytest
 pytest-asyncio
 black
