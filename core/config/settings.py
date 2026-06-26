@@ -7,8 +7,6 @@ Extension Notes: add grouped nested settings as the platform grows.
 """
 
 from functools import lru_cache
-from typing import Self
-
 from pydantic import SecretStr, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -32,6 +30,7 @@ class Settings(BaseSettings):
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
     google_maps_api_key: SecretStr | None = None
+    oauth_token_encryption_key: SecretStr | None = None
     github_token: SecretStr | None = None
     weather_api_key: SecretStr | None = None
 
@@ -73,11 +72,11 @@ class Settings(BaseSettings):
         return validate_iana_timezone(value)
 
     @property
-    def is_production(self: Self) -> bool:
+    def is_production(self) -> bool:
         """Return whether the process is running in production."""
         return self.app_env == AppEnvironment.PRODUCTION
 
-    def safe_dict(self: Self) -> dict[str, str | bool]:
+    def safe_dict(self) -> dict[str, str | bool]:
         """Return non-sensitive configuration values."""
         return {
             "app_name": self.app_name,
@@ -86,13 +85,15 @@ class Settings(BaseSettings):
             "timezone": self.timezone,
             "log_level": self.log_level.value,
             "openai_model": self.openai_model,
+            "google_oauth_configured": bool(self.google_client_id),
+            "token_encryption_configured": bool(self.oauth_token_encryption_key),
         }
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     """Return the singleton settings object for this process."""
-    return Settings()
+    return Settings.model_validate({})
 
 
 settings = get_settings()

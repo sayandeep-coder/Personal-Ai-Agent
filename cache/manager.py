@@ -8,12 +8,21 @@ Extension Notes: add logical clients for cache, broker, and locks if needed.
 
 from dataclasses import dataclass, field
 from time import perf_counter
+from typing import Protocol, cast
 
 from redis import Redis
 
 from cache.factory import create_redis_client
 from core.config import Settings
 from core.interfaces.health import HealthReport
+
+
+class ClosableRedis(Protocol):
+    """Protocol for Redis clients that can close connection pools."""
+
+    def close(self) -> None:
+        """Close Redis client resources."""
+        ...
 
 
 @dataclass
@@ -31,7 +40,7 @@ class RedisManager:
     def stop(self) -> None:
         """Close the Redis client connection pool."""
         if self.client is not None:
-            self.client.close()
+            cast(ClosableRedis, self.client).close()
         self.client = None
 
     def get_client(self) -> Redis:

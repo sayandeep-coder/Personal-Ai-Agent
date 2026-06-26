@@ -11,6 +11,14 @@ from collections.abc import Iterator
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from core.config import settings
+from database.engine import create_database_engine
+
+
+engine = create_database_engine(settings)
+SessionLocal = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+session_factory = SessionLocal
+
 
 def create_session_factory(engine: Engine) -> sessionmaker[Session]:
     """Create a session factory bound to the provided engine."""
@@ -24,4 +32,3 @@ def session_scope(factory: sessionmaker[Session]) -> Iterator[Session]:
         yield session
     finally:
         session.close()
-

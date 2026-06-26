@@ -12,10 +12,12 @@ from time import perf_counter
 from sqlalchemy import Engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
-from core.config import Settings
+from core.config import Settings, settings as default_settings
 from core.interfaces.health import HealthReport
 from database.engine import create_database_engine
 from database.session import create_session_factory
+from database.session import engine as default_engine
+from database.session import session_factory as default_session_factory
 
 
 @dataclass
@@ -29,8 +31,12 @@ class DatabaseManager:
     def start(self) -> None:
         """Initialize the engine and session factory if needed."""
         if self.engine is None:
-            self.engine = create_database_engine(self.settings)
-            self.session_factory = create_session_factory(self.engine)
+            if self.settings == default_settings:
+                self.engine = default_engine
+                self.session_factory = default_session_factory
+            else:
+                self.engine = create_database_engine(self.settings)
+                self.session_factory = create_session_factory(self.engine)
 
     def stop(self) -> None:
         """Dispose the database engine."""

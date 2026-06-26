@@ -7,6 +7,7 @@ psycopg2-binary
 pgvector
 redis
 celery
+certifi
 google-api-python-client
 google-auth
 google-auth-oauthlib
@@ -20,6 +21,7 @@ requests
 python-dotenv
 pydantic
 pydantic-settings
+email-validator
 typer
 rich
 loguru

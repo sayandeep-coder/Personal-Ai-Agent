@@ -13,6 +13,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from importlib import import_module
+from typing import cast
 
 from core.utils import utc_now
 
@@ -76,7 +77,8 @@ class MetricsManager:
         """Return rounded process CPU/load signal."""
         try:
             psutil = import_module("psutil")
-            return round(psutil.Process(os.getpid()).cpu_percent(interval=None), 2)
+            cpu_percent = cast(float, psutil.Process(os.getpid()).cpu_percent(interval=None))
+            return round(cpu_percent, 2)
         except Exception:
             cpu_load = os.getloadavg()[0] if hasattr(os, "getloadavg") else 0.0
             return round(cpu_load, 2)

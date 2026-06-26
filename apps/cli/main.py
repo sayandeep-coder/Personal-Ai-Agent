@@ -9,9 +9,17 @@ Extension Notes: split commands into modules when command surface grows.
 import sys
 
 import typer
-from rich.console import Console
 
 from apps.cli.output import render_doctor, render_health, render_help, render_mapping
+from apps.cli.auth import auth_app
+from apps.cli.calendar import calendar_app
+from apps.cli.docs import docs_app
+from apps.cli.drive import drive_app
+from apps.cli.gmail import gmail_app
+from apps.cli.maps import maps_app
+from apps.cli.sheets import sheets_app
+from apps.cli.weather import weather_app
+from apps.cli.console import console
 
 app = typer.Typer(
     name="pa",
@@ -20,8 +28,14 @@ app = typer.Typer(
     rich_markup_mode=None,
     pretty_exceptions_enable=False,
 )
-console = Console()
-
+app.add_typer(auth_app, name="auth")
+app.add_typer(gmail_app, name="gmail")
+app.add_typer(calendar_app, name="calendar")
+app.add_typer(drive_app, name="drive")
+app.add_typer(docs_app, name="docs")
+app.add_typer(sheets_app, name="sheets")
+app.add_typer(weather_app, name="weather")
+app.add_typer(maps_app, name="maps")
 
 @app.command()
 def health() -> None:
@@ -41,7 +55,6 @@ def health() -> None:
     finally:
         container.stop()
 
-
 @app.command()
 def version() -> None:
     """Show application version metadata."""
@@ -51,14 +64,12 @@ def version() -> None:
     metadata = ApplicationMetadata(settings=settings)
     render_mapping(console, "Version", metadata.as_dict())
 
-
 @app.command()
 def config() -> None:
     """Show non-sensitive configuration."""
     from core.config import settings
 
     render_mapping(console, "Configuration", settings.safe_dict())
-
 
 @app.command()
 def doctor() -> None:
