@@ -284,10 +284,5 @@ See the `LICENSE` file for complete terms.
 
 ---
 
-# Author
-
 **Sayandeep Purkait**
 
-AI Engineer • Backend Developer • AI Systems Builder
-
-Building scalable software, AI systems, and intelligent automation platforms.
